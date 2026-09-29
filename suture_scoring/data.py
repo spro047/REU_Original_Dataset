@@ -56,7 +56,8 @@ def load_annotations(xlsx_path: str | Path) -> List[Annotation]:
     columns. Score cells are stored as text and cast to int. Raises ValueError
     if the index column disagrees with the id encoded in the filename.
     """
-    with openpyxl.load_workbook(xlsx_path, read_only=True) as wb:
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True)
+    try:
         ws = wb["Sheet1"]
         rows = ws.iter_rows(values_only=True)
         header = next(rows)
@@ -77,6 +78,8 @@ def load_annotations(xlsx_path: str | Path) -> List[Annotation]:
                 )
             annotations.append(annotation)
         return annotations
+    finally:
+        wb.close()
 
 
 def join_images_to_labels(image_dir: str | Path, annotations: List[Annotation]) -> JoinResult:
