@@ -1,0 +1,16 @@
+[project]
+name = "suture-scoring"
+version = "0.1.0"
+description = "AI suturing quality scoring pipeline (REU project)"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pillow",
+    "openpyxl",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

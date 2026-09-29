@@ -5,3 +5,8 @@
 # Local tooling / session state
 .codegraph/
 .omo/
+
+# Python artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
