@@ -7,10 +7,12 @@ dependencies = [
     "numpy",
     "pillow",
     "openpyxl",
+    "scipy",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest"]
+notebook = ["pandas", "matplotlib", "nbconvert", "ipykernel"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
