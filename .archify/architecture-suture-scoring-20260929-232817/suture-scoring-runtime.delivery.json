@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "640a9ee7-cfd9-4cd9-b66c-7f60db045f1c",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "D:\\REU_Original_Dataset\\.archify\\architecture-suture-scoring-20260929-232817\\candidate.json",
+  "output": "D:\\REU_Original_Dataset\\.archify\\architecture-suture-scoring-20260929-232817\\suture-scoring-runtime.html",
+  "specification": {
+    "sha256": "f5ada671ffd15b580a866d8ae59f078e8cd61c9200e11c30fb9f55d831fcf897",
+    "bytes": 7311
+  },
+  "artifact": {
+    "sha256": "1dd165b2decf6da9565915f1803b81ae9b6e33a11a39086bd349aa62041d76e9",
+    "bytes": 775098
+  }
+}

@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Suture Quality Scoring \u2014 Runtime Architecture",
+    "subtitle": "AI suturing skill assessment pipeline (REU project)",
+    "output": ".archify/architecture-suture-scoring-20260929-232817/suture-scoring-runtime.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "researcher",
+      "type": "external",
+      "label": "Researcher",
+      "sublabel": "CLI operator",
+      "pos": [
+        40,
+        90
+      ],
+      "size": [
+        120,
+        60
+      ]
+    },
+    {
+      "id": "clinicians",
+      "type": "external",
+      "label": "Expert Clinicians",
+      "sublabel": "ground-truth labels",
+      "pos": [
+        760,
+        470
+      ],
+      "size": [
+        120,
+        60
+      ]
+    },
+    {
+      "id": "cli",
+      "type": "frontend",
+      "label": "CLI",
+      "sublabel": "score \u00b7 train \u00b7 validate \u00b7 artifacts",
+      "pos": [
+        240,
+        90
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "dataset",
+      "type": "database",
+      "label": "Dataset Storage",
+      "sublabel": "Train/Val/Test PNGs + xlsx",
+      "pos": [
+        240,
+        420
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "preprocess",
+      "type": "backend",
+      "label": "Preprocessing",
+      "sublabel": "resize \u00b7 pad \u00b7 normalize",
+      "pos": [
+        500,
+        90
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "model",
+      "type": "backend",
+      "label": "Ordinal Model",
+      "sublabel": "resnet18 \u00b7 CORAL heads \u00b7 0-10",
+      "pos": [
+        500,
+        220
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "CUDA"
+    },
+    {
+      "id": "train",
+      "type": "backend",
+      "label": "Training",
+      "sublabel": "splits \u00b7 augmentation \u00b7 seeds",
+      "pos": [
+        500,
+        350
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "aggregation",
+      "type": "backend",
+      "label": "Hybrid Aggregation",
+      "sublabel": "params + residual \u2192 Overall",
+      "pos": [
+        760,
+        90
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "scoring",
+      "type": "backend",
+      "label": "Cohort Scoring",
+      "sublabel": "per-cohort score CSVs",
+      "pos": [
+        760,
+        220
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "validation",
+      "type": "security",
+      "label": "Metrics & Validation",
+      "sublabel": "MAE \u00b7 ECE \u00b7 ICC \u00b7 \u03ba",
+      "pos": [
+        760,
+        350
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "artifacts",
+      "type": "backend",
+      "label": "Paper Artifacts",
+      "sublabel": "tables + figures",
+      "pos": [
+        1020,
+        220
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "notebooks",
+      "type": "frontend",
+      "label": "Notebooks",
+      "sublabel": "5 executed reports",
+      "pos": [
+        1020,
+        90
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Suture Scoring Pipeline (Python)",
+      "wraps": [
+        "cli",
+        "preprocess",
+        "model",
+        "train",
+        "aggregation",
+        "scoring",
+        "validation",
+        "artifacts",
+        "notebooks"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Trusted annotations (expert ground truth)",
+      "wraps": [
+        "dataset"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Evaluation firewall \u2014 official Val used once",
+      "wraps": [
+        "validation"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "researcher-to-cli",
+      "from": "researcher",
+      "to": "cli",
+      "label": "invokes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "cli-to-preprocess",
+      "from": "cli",
+      "to": "preprocess",
+      "label": "score: images",
+      "variant": "emphasis"
+    },
+    {
+      "id": "cli-to-train",
+      "from": "cli",
+      "to": "train",
+      "label": "train"
+    },
+    {
+      "id": "cli-to-artifacts",
+      "from": "cli",
+      "to": "artifacts",
+      "label": "generate",
+      "variant": "dashed"
+    },
+    {
+      "id": "dataset-to-preprocess",
+      "from": "dataset",
+      "to": "preprocess",
+      "label": "reads PNGs"
+    },
+    {
+      "id": "dataset-to-train",
+      "from": "dataset",
+      "to": "train",
+      "label": "annotations (text scores)"
+    },
+    {
+      "id": "clinicians-to-validation",
+      "from": "clinicians",
+      "to": "validation",
+      "label": "expert labels (pending)",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "preprocess-to-model",
+      "from": "preprocess",
+      "to": "model",
+      "label": "normalized tensors",
+      "variant": "emphasis"
+    },
+    {
+      "id": "train-to-model",
+      "from": "train",
+      "to": "model",
+      "label": "best checkpoint",
+      "variant": "dashed"
+    },
+    {
+      "id": "model-to-aggregation",
+      "from": "model",
+      "to": "aggregation",
+      "label": "params + residual",
+      "variant": "emphasis"
+    },
+    {
+      "id": "aggregation-to-scoring",
+      "from": "aggregation",
+      "to": "scoring",
+      "label": "Overall 0-10",
+      "variant": "emphasis"
+    },
+    {
+      "id": "scoring-to-validation",
+      "from": "scoring",
+      "to": "validation",
+      "label": "AI scores",
+      "variant": "emphasis"
+    },
+    {
+      "id": "validation-to-artifacts",
+      "from": "validation",
+      "to": "artifacts",
+      "label": "metrics + agreement",
+      "variant": "emphasis"
+    },
+    {
+      "id": "artifacts-to-notebooks",
+      "from": "artifacts",
+      "to": "notebooks",
+      "label": "reports",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Runtime stack",
+      "items": [
+        "PyTorch + torchvision on CUDA (GTX 1650 Ti)",
+        "numpy / scipy / pandas / matplotlib",
+        "Python 3.12 CLI \u2014 no service layer"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Data discipline",
+      "items": [
+        "Train 1010 \u00b7 Val 206 \u00b7 Test 432 (application cohort)",
+        "Official Val touched exactly once for final numbers",
+        "xlsx scores are text strings \u2014 int-cast on load"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Trust & provenance",
+      "items": [
+        "Checkpoints, CSVs, artifacts are generated (gitignored), not sources of truth",
+        "resnet18 + ImageNet: held-out Overall MAE 0.471; Val MAE 0.681",
+        "Expert labels for the 432 Test images not yet collected"
+      ]
+    }
+  ]
+}
