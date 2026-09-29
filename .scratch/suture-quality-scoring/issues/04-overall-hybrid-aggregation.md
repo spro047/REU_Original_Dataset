@@ -4,9 +4,9 @@
 
 **Blocked by:** 03 (needs the trained model's parameter outputs to calibrate against)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Aggregation computes Overall from the five predicted parameters, verified against hand-computed inputs
-- [ ] Learned residual term is trained and evaluated against the fallback (no residual)
-- [ ] Calibrated against the annotated Overall on held-out data
-- [ ] Decision on residual-vs-fallback recorded (whichever wins)
+- [x] Aggregation computes Overall from the five predicted parameters, verified against hand-computed inputs
+- [x] Learned residual term is trained and evaluated against the fallback (no residual) — K-fold out-of-fold MAE
+- [x] Calibrated against the annotated Overall on held-out data
+- [x] Decision on residual-vs-fallback recorded (with_residual won: MAE 1.011 vs 1.125 on the held-out slice; rerun with the paper model to lock for the manuscript)
