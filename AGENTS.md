@@ -24,12 +24,15 @@ Dataset/
 
 ## Annotations (Train & Val xlsx, sheet "Sheet1")
 
-Columns: `Name, Overall, ISD, Slack, Position, Angulation, Width` (all 0–9 scores).
+Columns: `Name, Overall, ISD, Slack, Position, Angulation, Width` (all 0–10
+scores; 10 is rare — only a handful of rows, in Overall/Slack).
 
 - Column A is a 0-based index that equals the numeric id in the filename
   (verified: 0 mismatches in both files).
 - All score cells are stored as **text strings**, not numbers — cast with
-  `int()` before arithmetic. No missing values anywhere.
+  `int()` before arithmetic. Do not compare or sort them as strings:
+  lexicographic ordering reports `'9'` as the max and hides `'10'`. No missing
+  values anywhere.
 - Join images to labels on `Name` (filenames match directory contents 1:1 in
   both splits — verified both directions).
 
@@ -44,15 +47,17 @@ Columns: `Name, Overall, ISD, Slack, Position, Angulation, Width` (all 0–9 sco
 
 ## Gotchas
 
-- **The `.zip` archives (`Application_cohort.zip`, `Train_cohort.zip`,
-  `Validation_cohort.zip`) contain a junk duplicate of every PNG under
-  `__MACOSX/`** (e.g. Train zip = 1010 real + 1010 dupes). Never iterate a zip
-  without filtering `__MACOSX/`, `._*` entries, and `.DS_Store`. The extracted
-  folders are the clean source of truth and match the xlsx exactly.
+- The `.zip` archives (`Application_cohort.zip`, `Train_cohort.zip`,
+  `Validation_cohort.zip`) were **removed from the repo** — the extracted
+  folders are the authoritative source. If a `.zip` ever reappears, note that
+  macOS-created archives carry a junk duplicate of every file under
+  `__MACOSX/` plus `.DS_Store`; never iterate one without filtering
+  `__MACOSX/`, `._*`, and `.DS_Store`.
 - `Dataset/Test/Application_cohort/.DS_Store` is a macOS artifact — exclude it
   from any glob/scan.
-- Images have inconsistent resolutions (observed 404x742 and 602x423). There is
-  no preprocessing or resizing pipeline in the repo.
+- Images have wildly inconsistent resolutions (observed 383x549 to 1694x1406,
+  plus 404x742, 602x423, 869x850, 438x493). There is no preprocessing or
+  resizing pipeline in the repo — any loader must normalize.
 
 ## Agent skills
 
