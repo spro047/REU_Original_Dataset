@@ -52,11 +52,15 @@ def load_expert_labels(xlsx_path: str | Path) -> Dict[str, Dict[str, int]]:
 
 
 def read_scores_csv(csv_path: str | Path) -> Dict[str, Dict[str, float]]:
-    """Read a scored cohort CSV into {filename: {key: score}} (score columns only)."""
+    """Read a scored cohort CSV into {filename: {key: score, conf_key: confidence}}."""
     out: Dict[str, Dict[str, float]] = {}
     with open(csv_path, newline="") as f:
         for row in csv.DictReader(f):
-            out[row["filename"]] = {key: float(row[key]) for key in SCORE_KEYS}
+            entry = {key: float(row[key]) for key in SCORE_KEYS}
+            entry.update(
+                {f"conf_{key}": float(row[f"conf_{key}"]) for key in SCORE_KEYS if f"conf_{key}" in row}
+            )
+            out[row["filename"]] = entry
     return out
 
 

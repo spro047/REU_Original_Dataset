@@ -6,6 +6,7 @@ import csv
 import sys
 from pathlib import Path
 
+from .artifacts import generate_all
 from .data import SCORE_KEYS, list_images, load_annotations
 from .dataset import split_annotations
 from .model import ToyScorer
@@ -32,6 +33,12 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--scores", type=Path, required=True, help="scored cohort CSV from the score command")
     validate.add_argument("--labels", type=Path, required=True, help="expert annotations xlsx (application cohort naming)")
     validate.add_argument("--level", type=str, default="", help="report label only; per-level agreement is computed by running validate per cohort CSV")
+
+    artifacts = sub.add_parser("artifacts", help="generate paper tables and figures from the scored cohort CSVs")
+    artifacts.add_argument("--scores-dir", type=Path, required=True, help="directory with scores-<Cohort>.csv files")
+    artifacts.add_argument("--val-annotations", type=Path, required=True, help="Val annotations xlsx (final numbers)")
+    artifacts.add_argument("--output-dir", type=Path, required=True, help="directory to write tables and figures into")
+    artifacts.add_argument("--expert-labels", type=Path, default=None, help="expert annotations xlsx for the application cohort (optional)")
 
     train = sub.add_parser("train", help="train the ordinal suture model on the Train cohort")
     train.add_argument("--annotations", type=Path, required=True, help="Train annotations xlsx")
@@ -137,6 +144,18 @@ def cmd_validate(parser: argparse.ArgumentParser, args: argparse.Namespace) -> i
     return 0
 
 
+def cmd_artifacts(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
+    if not args.scores_dir.is_dir():
+        parser.error(f"scores directory not found: {args.scores_dir}")
+    if not args.val_annotations.exists():
+        parser.error(f"val annotations not found: {args.val_annotations}")
+    produced = generate_all(args.scores_dir, args.val_annotations, args.output_dir, args.expert_labels)
+    print(f"wrote {len(produced)} artifacts to {args.output_dir}:")
+    for path in produced.values():
+        print(f"  {path}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -146,6 +165,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_train(parser, args)
     if args.command == "validate":
         return cmd_validate(parser, args)
+    if args.command == "artifacts":
+        return cmd_artifacts(parser, args)
     return 1  # unreachable: subparsers are required
 
 

@@ -17,3 +17,4 @@ models/
 
 # Generated scoring outputs
 outputs/
+artifacts/

@@ -52,6 +52,23 @@ def spearman(y_true, y_pred) -> float:
     return float(rho)
 
 
+def confidence_bins(confidences, correct, n_bins: int = 10):
+    """Per-bin (mean confidence, accuracy, weight) over [0, 1]; empty bins skipped.
+
+    Shared by ECE and the calibration curve so both use the identical binning.
+    """
+    conf = np.asarray(confidences, dtype=float)
+    corr = np.asarray(correct, dtype=float)
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    bins = []
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        mask = (conf >= lo) & (conf <= hi) if lo == 0.0 else (conf > lo) & (conf <= hi)
+        if not np.any(mask):
+            continue
+        bins.append((float(np.mean(conf[mask])), float(np.mean(corr[mask])), float(np.sum(mask) / conf.size)))
+    return bins
+
+
 def ece(confidences, correct, n_bins: int = 10) -> float:
     """Expected calibration error: mean |bin accuracy - mean confidence|.
 
@@ -67,15 +84,7 @@ def ece(confidences, correct, n_bins: int = 10) -> float:
         raise ValueError("confidences and correct must be the same length")
     if np.any((conf < 0.0) | (conf > 1.0)):
         raise ValueError("confidences must lie in [0, 1]")
-    n = conf.size
-    edges = np.linspace(0.0, 1.0, n_bins + 1)
-    total = 0.0
-    for lo, hi in zip(edges[:-1], edges[1:]):
-        mask = (conf >= lo) & (conf <= hi) if lo == 0.0 else (conf > lo) & (conf <= hi)
-        if not np.any(mask):
-            continue
-        total += (np.sum(mask) / n) * abs(np.mean(corr[mask]) - np.mean(conf[mask]))
-    return float(total)
+    return float(sum(weight * abs(acc - mean_conf) for mean_conf, acc, weight in confidence_bins(conf, corr, n_bins)))
 
 
 def icc(ratings) -> float:
