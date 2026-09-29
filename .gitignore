@@ -10,3 +10,7 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Training checkpoints
+models/
+*.pt

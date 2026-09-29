@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import torch
 from PIL import Image
 
 DEFAULT_SIZE = 512
@@ -31,3 +32,8 @@ def preprocess_image(path: str | Path, size: int = DEFAULT_SIZE) -> np.ndarray:
 
         arr = np.asarray(canvas, dtype=np.float32) / 255.0
     return arr
+
+
+def to_tensor(image: np.ndarray) -> torch.Tensor:
+    """Convert a (H, W, 3) float32 image in [0, 1] to a (3, H, W) torch tensor."""
+    return torch.from_numpy(image).permute(2, 0, 1)

@@ -8,6 +8,8 @@ dependencies = [
     "pillow",
     "openpyxl",
     "scipy",
+    "torch",
+    "torchvision",
 ]
 
 [project.optional-dependencies]
