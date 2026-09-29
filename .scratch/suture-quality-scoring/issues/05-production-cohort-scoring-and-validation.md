@@ -4,10 +4,10 @@
 
 **Blocked by:** 03 (trained model), 02 (metrics module), 04 (Overall aggregation)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Trained model scores Train, Val, and application cohorts to per-cohort CSVs (six scores + confidence per image)
-- [ ] Official Val used exactly once for final numbers
-- [ ] Expert-label consumer accepts application-cohort annotations and aligns them to images
-- [ ] ICC and weighted Cohen's kappa computed per trainee level when expert labels are present
-- [ ] Graceful, documented behavior when expert labels are not yet available
+- [x] Trained model scores Train, Val, and application cohorts to per-cohort CSVs (six scores + confidence per image)
+- [x] Official Val used exactly once for final numbers (scored; nothing fitted on it)
+- [x] Expert-label consumer accepts application-cohort annotations and aligns them to images (NNNN_Doc_XX_Itr_YY names, index invariant, alignment report)
+- [x] ICC and weighted Cohen's kappa computed per trainee level when expert labels are present (agreement_by_level; notebook uses real labels when present, synthetic fallback demo otherwise)
+- [x] Graceful, documented behavior when expert labels are not yet available
