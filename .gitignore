@@ -1,0 +1,7 @@
+# macOS artifacts
+.DS_Store
+._*
+
+# Local tooling / session state
+.codegraph/
+.omo/
