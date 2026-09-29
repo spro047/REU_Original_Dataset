@@ -4,9 +4,9 @@
 
 **Blocked by:** 05 (cohort scoring and validation outputs), 02 (metrics module)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Metrics tables generated from final Val numbers
-- [ ] AI-vs-expert agreement tables generated from application-cohort scoring plus expert labels
-- [ ] Correlation scatter plots, calibration curves, and trainee-level comparison figures emitted
-- [ ] One command regenerates all artifacts from the scored CSVs
+- [x] Metrics tables generated from final Val numbers (MAE, exact, ±1, Spearman, ECE per output; predictions rounded to the 0–10 scale for exact/calibration)
+- [x] AI-vs-expert agreement tables generated from application-cohort scoring plus expert labels (per trainee level; demo labels shown until real ones arrive)
+- [x] Correlation scatter plots, calibration curves, and trainee-level comparison figures emitted (per-output 2×3 grids + violin)
+- [x] One command regenerates all artifacts from the scored CSVs (`artifacts` CLI subcommand; notebook 05)
