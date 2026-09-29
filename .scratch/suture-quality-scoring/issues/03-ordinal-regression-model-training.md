@@ -4,10 +4,10 @@
 
 **Blocked by:** 01 (pipeline skeleton, fixtures, data layer)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Model trains end-to-end from the Train cohort with the hold-out slice used for selection and the official Val untouched
-- [ ] Each head outputs a distribution over 0–10 (sums to 1); argmax is the predicted score; spread yields per-output confidence
-- [ ] Fixed seeds make training reproducible
-- [ ] Augmentation and pretrained-backbone fine-tuning are in place
-- [ ] Dev metrics (via the metrics module) reported on the held-out slice for model selection
+- [x] Model trains end-to-end from the Train cohort with the hold-out slice used for selection and the official Val untouched
+- [x] Each head outputs a distribution over 0–10 (sums to 1); argmax is the predicted score; spread yields per-output confidence
+- [x] Fixed seeds make training reproducible
+- [x] Augmentation (geometric + photometric) and pretrained-backbone fine-tuning (`--pretrained`, resnet18) in place
+- [x] Dev metrics (via the metrics module) reported on the held-out slice for model selection
