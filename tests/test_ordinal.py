@@ -5,6 +5,7 @@ from suture_scoring.ordinal import (
     NUM_CATEGORIES,
     coral_loss,
     ordinal_confidence,
+    ordinal_expected,
     ordinal_probs,
     ordinal_score,
     ordinal_target,
@@ -41,6 +42,14 @@ def test_ordinal_confidence_two_point_mass():
     logits = torch.zeros(1, NUM_CATEGORIES - 1)
     expected = 1.0 - torch.log(torch.tensor(2.0)) / torch.log(torch.tensor(float(NUM_CATEGORIES)))
     assert ordinal_confidence(logits).item() == pytest.approx(expected.item(), abs=1e-3)
+
+
+def test_ordinal_expected_two_point_mass():
+    # all-zero logits -> 0.5 on 0 and 0.5 on 10 -> expected 5
+    logits = torch.zeros(1, NUM_CATEGORIES - 1)
+    assert ordinal_expected(logits).item() == pytest.approx(5.0)
+    assert ordinal_expected(torch.full((1, NUM_CATEGORIES - 1), 10.0)).item() == pytest.approx(10.0, abs=1e-2)
+    assert ordinal_expected(torch.full((1, NUM_CATEGORIES - 1), -10.0)).item() == pytest.approx(0.0, abs=1e-2)
 
 
 def test_ordinal_target_encoding():

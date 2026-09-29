@@ -42,6 +42,13 @@ def ordinal_confidence(logits: torch.Tensor, num_categories: int = NUM_CATEGORIE
     return 1.0 - entropy / h_max
 
 
+def ordinal_expected(logits: torch.Tensor, num_categories: int = NUM_CATEGORIES) -> torch.Tensor:
+    """Expected score: sum of k * p(k) over the ordinal distribution."""
+    probs = ordinal_probs(logits, num_categories)
+    k = torch.arange(num_categories, dtype=probs.dtype, device=probs.device)
+    return (probs * k).sum(dim=-1)
+
+
 def coral_loss(logits: torch.Tensor, labels: torch.Tensor, num_categories: int = NUM_CATEGORIES) -> torch.Tensor:
     """Mean binary cross-entropy over the K-1 ordinal tasks."""
     targets = ordinal_target(labels, num_categories)
