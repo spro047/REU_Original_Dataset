@@ -4,10 +4,10 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Fixture dataset exists (small number of real images + fixture annotations) and is reproducible
-- [ ] Annotations loader returns integer scores on the native 0–10 scale (never raw text) and joins images to labels by filename with zero mismatches
-- [ ] Preprocessing normalizes wildly inconsistent input resolutions to one fixed input size
-- [ ] CLI accepts an image directory and writes a valid CSV (one row per image, six scores + confidence per output)
-- [ ] Tests green at the loader, preprocessing, and CLI end-to-end seams
+- [x] Fixture dataset exists (small number of real images + fixture annotations) and is reproducible
+- [x] Annotations loader returns integer scores on the native 0–10 scale (never raw text) and joins images to labels by filename with zero mismatches
+- [x] Preprocessing normalizes wildly inconsistent input resolutions to one fixed input size
+- [x] CLI accepts an image directory and writes a valid CSV (one row per image, six scores + confidence per output)
+- [x] Tests green at the loader, preprocessing, and CLI end-to-end seams
