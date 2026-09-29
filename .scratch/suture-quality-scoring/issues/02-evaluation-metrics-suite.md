@@ -4,9 +4,9 @@
 
 **Blocked by:** 01 (fixture dataset provides inputs and expected values for the metric tests)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Dev metrics (MAE, exact-match %, ±1 accuracy, Spearman) computed per output and match hand-computed fixtures
-- [ ] ECE computed correctly and verified against a known-calibration fixture
-- [ ] ICC and weighted Cohen's kappa computed correctly and verified against known-value fixtures
-- [ ] Metrics module has no dependency on the trained model (works on any predicted-vs-actual arrays)
+- [x] Dev metrics (MAE, exact-match %, ±1 accuracy, Spearman) computed per output and match hand-computed fixtures
+- [x] ECE computed correctly and verified against a known-calibration fixture (numeric 0.4 fixture)
+- [x] ICC and weighted Cohen's kappa computed correctly and verified against known-value fixtures (Shrout–Fleiss 0.29, hand-derived 0.75)
+- [x] Metrics module has no dependency on the trained model (works on any predicted-vs-actual arrays)
