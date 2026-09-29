@@ -10,7 +10,9 @@ from .data import SCORE_KEYS, list_images, load_annotations
 from .dataset import split_annotations
 from .model import ToyScorer
 from .preprocess import DEFAULT_SIZE, preprocess_image
-from .train import train_model
+from .score import fit_aggregation, score_cohort, write_csv
+from .train import load_model, train_model
+from .validate import agreement, alignment_report, load_expert_labels, read_scores_csv
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,6 +24,14 @@ def build_parser() -> argparse.ArgumentParser:
     score.add_argument("images_dir", type=Path, help="directory of suturing images")
     score.add_argument("--out", type=Path, required=True, help="output CSV path")
     score.add_argument("--size", type=int, default=DEFAULT_SIZE, help="preprocessing input size")
+    score.add_argument("--checkpoint", type=Path, help="trained model checkpoint (uses real model + fitted Overall aggregation)")
+    score.add_argument("--annotations", type=Path, help="Train annotations xlsx (required with --checkpoint, to fit the aggregation)")
+    score.add_argument("--train-images", type=Path, help="Train images directory (required with --checkpoint)")
+
+    validate = sub.add_parser("validate", help="AI-vs-expert agreement (ICC, weighted kappa) for a scored cohort")
+    validate.add_argument("--scores", type=Path, required=True, help="scored cohort CSV from the score command")
+    validate.add_argument("--labels", type=Path, required=True, help="expert annotations xlsx (application cohort naming)")
+    validate.add_argument("--level", type=str, default="", help="report label only; per-level agreement is computed by running validate per cohort CSV")
 
     train = sub.add_parser("train", help="train the ordinal suture model on the Train cohort")
     train.add_argument("--annotations", type=Path, required=True, help="Train annotations xlsx")
@@ -43,6 +53,19 @@ def cmd_score(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
         parser.error(f"images directory not found: {args.images_dir}")
     if args.size <= 0:
         parser.error(f"invalid --size {args.size}: must be positive")
+    if args.checkpoint is not None:
+        if args.annotations is None or args.train_images is None:
+            parser.error("--checkpoint requires --annotations and --train-images to fit the Overall aggregation")
+        if not args.train_images.is_dir():
+            parser.error(f"train images directory not found: {args.train_images}")
+        model = load_model(args.checkpoint)
+        annotations = load_annotations(args.annotations)
+        aggregation = fit_aggregation(model, args.train_images, annotations, size=args.size)
+        rows = score_cohort(model, aggregation, args.images_dir, size=args.size)
+        write_csv(rows, args.out)
+        print(f"scored {len(rows)} images -> {args.out} (trained model)")
+        return 0
+
     image_paths = list_images(args.images_dir)
     if not image_paths:
         parser.error(f"no images found in {args.images_dir}")
@@ -94,6 +117,26 @@ def cmd_train(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_validate(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
+    if not args.scores.exists():
+        parser.error(f"scores CSV not found: {args.scores}")
+    if not args.labels.exists():
+        parser.error(f"expert labels not found: {args.labels}")
+    scores = read_scores_csv(args.scores)
+    labels = load_expert_labels(args.labels)
+    alignment = alignment_report(scores, labels)
+    label = f" ({args.level})" if args.level else ""
+    print(f"AI-vs-expert agreement{label} on {len(set(scores) & set(labels))} images")
+    for kind, names in alignment.items():
+        if names:
+            print(f"note: {len(names)} {kind.replace('_', ' ')}")
+    result = agreement(scores, labels)
+    print(f"{'output':12s} {'icc':>8s} {'kappa':>8s}")
+    for key in SCORE_KEYS:
+        print(f"{key:12s} {result[key]['icc']:8.3f} {result[key]['kappa']:8.3f}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -101,6 +144,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_score(parser, args)
     if args.command == "train":
         return cmd_train(parser, args)
+    if args.command == "validate":
+        return cmd_validate(parser, args)
     return 1  # unreachable: subparsers are required
 
 
