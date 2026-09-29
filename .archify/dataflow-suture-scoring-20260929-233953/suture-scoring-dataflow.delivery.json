@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "db09fef8-31d8-4c36-8d8e-2e8c663e5de8",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "D:\\REU_Original_Dataset\\.archify\\dataflow-suture-scoring-20260929-233953\\candidate.json",
+  "output": "D:\\REU_Original_Dataset\\.archify\\dataflow-suture-scoring-20260929-233953\\suture-scoring-dataflow.html",
+  "specification": {
+    "sha256": "97797443e0315bcd2d0b12753c0081e2d4814c633a1aa2d26943ecb30d86b2cc",
+    "bytes": 3685
+  },
+  "artifact": {
+    "sha256": "20e25e214d4a65b4b8ef126ad0ef6109fca71add722559813c0d7bccb92bd1fe",
+    "bytes": 751891
+  }
+}
